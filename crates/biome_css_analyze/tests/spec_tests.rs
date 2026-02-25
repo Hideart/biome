@@ -1,5 +1,6 @@
 use biome_analyze::{
-    AnalysisFilter, AnalyzerAction, AnalyzerPluginSlice, ControlFlow, Never, RuleFilter,
+    AnalysisFilter, AnalyzerAction, AnalyzerPlugin, AnalyzerPluginSlice, ControlFlow, Never,
+    Queryable, RegistryVisitor, Rule, RuleDomain, RuleFilter, RuleGroup,
 };
 use biome_css_analyze::CssAnalyzerServices;
 use biome_css_parser::{CssParserOptions, parse_css};
@@ -303,7 +304,7 @@ fn run_plugin_test(input: &'static str, _: &str, _: &str, _: &str) {
         &input_path,
         CheckActionType::Lint,
         CssParserOptions::default(),
-        &[Arc::new(Box::new(plugin))],
+        &[Arc::new(plugin) as Arc<dyn AnalyzerPlugin>],
     );
 
     insta::with_settings!({

@@ -1,5 +1,109 @@
 # @biomejs/biome
 
+## 2.4.5
+
+### Patch Changes
+
+- [#9184](https://github.com/biomejs/biome/pull/9184) [`49c8fde`](https://github.com/biomejs/biome/commit/49c8fdecf69089e1be9e58fa52f6b72fd54ce08e) Thanks [@chocky335](https://github.com/chocky335)! - Improved plugin performance by batching all plugins into a single syntax visitor with a kind-to-plugin lookup map, reducing per-node dispatch overhead from O(N) to O(1) where N is the number of plugins.
+
+- [#9221](https://github.com/biomejs/biome/pull/9221) [`4612133`](https://github.com/biomejs/biome/commit/4612133cd9677cda3c2eedb52fd8b46be579410d) Thanks [@ematipico](https://github.com/ematipico)! - Fixed an issue where the JSON reporter didn't contain the duration of the command.
+
+- [#9178](https://github.com/biomejs/biome/pull/9178) [`101b3bb`](https://github.com/biomejs/biome/commit/101b3bb2658dd2fb7ce562f82b784fd5d068df62) Thanks [@Bertie690](https://github.com/Bertie690)! - Fixed [#9172](https://github.com/biomejs/biome/issues/9172) and [#9168](https://github.com/biomejs/biome/issues/9168):
+  Biome now considers more constructs as valid test assertions.
+
+  Previously, [`assert`](https://vitest.dev/api/assert.html), [`expectTypeOf`](https://vitest.dev/api/expect-typeof.html) and [`assertType`](https://vitest.dev/api/assert-type.html)
+  were not recognized as valid assertions by Biome's linting rules, producing false positives in [`lint/nursery/useExpect`](https://biomejs.dev/linter/rules/use-expect) and other similar rules.
+
+  Now, these rules will no longer produce errors in test cases that used these constructs instead of `expect`:
+
+  ```ts
+  import { expectTypeOf, assert, assertType } from "vitest";
+
+  const myStr = "Hello from vitest!";
+  it("should be a string", () => {
+    expectTypeOf(myStr).toBeString();
+  });
+  test("should still be a string", () => {
+    assertType<string>(myStr);
+  });
+  it.todo("should still still be a string", () => {
+    assert(typeof myStr === "string");
+  });
+  ```
+
+- [#9173](https://github.com/biomejs/biome/pull/9173) [`32dad2d`](https://github.com/biomejs/biome/commit/32dad2deb5373950ee52f0e1c544b3313bbe6b52) Thanks [@dyc3](https://github.com/dyc3)! - Added parsing support for Svelte's new [comments-in-tags](https://github.com/sveltejs/svelte/pull/17671) feature.
+
+  The HTML parser will now accept JS style comments in tags in Svelte files.
+
+  ```svelte
+  <button
+    // single-line comment
+    onclick={doTheThing}
+  >click me</button>
+
+  <div
+    /* block comment */
+    class="foo"
+  >text</div>
+  ```
+
+- [#8952](https://github.com/biomejs/biome/pull/8952) [`1d2ca15`](https://github.com/biomejs/biome/commit/1d2ca15f85f6968b4e4ad262a65aadc76fc54f50) Thanks [@pkallos](https://github.com/pkallos)! - Added the nursery rule [`useNullishCoalescing`](https://biomejs.dev/linter/rules/use-nullish-coalescing/). This rule suggests using the nullish coalescing operator (`??`) instead of logical OR (`||`) when the left operand may be nullish. This prevents bugs where falsy values like `0`, `''`, or `false` are incorrectly treated as missing. Addresses [#8043](https://github.com/biomejs/biome/issues/8043)
+
+  ```ts
+  // Invalid
+  declare const x: string | null;
+  const value = x || "default";
+
+  // Valid
+  const value = x ?? "default";
+  ```
+
+- [#9243](https://github.com/biomejs/biome/pull/9243) [`1992a85`](https://github.com/biomejs/biome/commit/1992a852d83eb86bae4f6adb999cde284ffa9427) Thanks [@Netail](https://github.com/Netail)! - Fixed [#7813](https://github.com/biomejs/biome/issues/7813): improved the diagnostic of the rule [`useExhaustiveDependencies`](https://biomejs.dev/linter/rules/use-exhaustive-dependencies/). The diagnostic now shows the name of the variable to add to the dependency array.
+
+- [#9063](https://github.com/biomejs/biome/pull/9063) [`3d0648f`](https://github.com/biomejs/biome/commit/3d0648f95a0f7a3fd8ddff58d57a239e68183fe1) Thanks [@taga3s](https://github.com/taga3s)! - Added the nursery rule [`noVueRefAsOperand`](https://biomejs.dev/linter/rules/no-vue-ref-as-operand/). This rule disallows cases where a ref is used as an operand.
+
+  The following code is now flagged:
+
+  ```js
+  import { ref } from "vue";
+
+  const count = ref(0);
+  count++; // Should be: count.value++
+  ```
+
+  ```js
+  import { ref } from "vue";
+
+  const ok = ref(false);
+  if (ok) {
+    // Should be: if (ok.value)
+    //
+  }
+  ```
+
+- [#9215](https://github.com/biomejs/biome/pull/9215) [`b2619a1`](https://github.com/biomejs/biome/commit/b2619a1810f8c2dfc83f03ac2d810b1d34d658c5) Thanks [@FrederickStempfle](https://github.com/FrederickStempfle)! - Fixed [#9189](https://github.com/biomejs/biome/issues/9189): `biome ci` in GitHub Actions now correctly disables colors so that `::error`/`::warning` workflow commands are not wrapped in ANSI escape codes.
+
+- [#9223](https://github.com/biomejs/biome/pull/9223) [`5b9da81`](https://github.com/biomejs/biome/commit/5b9da81189b09152d6a19b11c2911818ef812975) Thanks [@ematipico](https://github.com/ematipico)! - Fixed an issue where the JSON reporter didn't write output to a file when `--reporter-file` was specified. The output is now correctly written to the specified file instead of always going to stdout.
+
+- [#9191](https://github.com/biomejs/biome/pull/9191) [`688fd34`](https://github.com/biomejs/biome/commit/688fd3480ae5c4b1d8d3a43fc5fe41c64ed0d0d1) Thanks [@dyc3](https://github.com/dyc3)! - Fixed [#9180](https://github.com/biomejs/biome/issues/9180): fixed a panic caused by an interaction between `noRedundantUseStrict` and the formatter
+
+- [#9163](https://github.com/biomejs/biome/pull/9163) [`f87acf6`](https://github.com/biomejs/biome/commit/f87acf675ebeca794878158cd122496b9c271673) Thanks [@JUSTIVE](https://github.com/JUSTIVE)! - Added `graphql` to valid embedded graphql template tags inside JavaScript files, when the feature `javascript.experimentalEmbeddedSnippetsEnabled` is enabled. This allows proper support for graphql tags used in RelayJS.
+
+  Now, code snippets like the following are correctly formatted and limited:
+
+  ```js
+  import { graphql } from "react-relay";
+
+  const query = graphql`
+    query {
+      user(id: 1) {
+        id
+        name
+      }
+    }
+  `;
+  ```
+
 ## 2.4.4
 
 ### Patch Changes

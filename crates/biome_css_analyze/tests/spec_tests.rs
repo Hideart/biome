@@ -1,6 +1,6 @@
 use biome_analyze::{
     AnalysisFilter, AnalyzerAction, AnalyzerPlugin, AnalyzerPluginSlice, ControlFlow, Never,
-    Queryable, RegistryVisitor, Rule, RuleDomain, RuleFilter, RuleGroup,
+    RuleFilter,
 };
 use biome_css_analyze::CssAnalyzerServices;
 use biome_css_parser::{CssParserOptions, parse_css};

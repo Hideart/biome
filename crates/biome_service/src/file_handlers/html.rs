@@ -1587,7 +1587,7 @@ pub(crate) fn fix_all(params: FixAllParams) -> Result<FixFileResult, WorkspaceEr
             },
             |new_text| {
                 let new_parse =
-                    biome_html_parser::parse_html(new_text, HtmlParseOptions::default());
+                    biome_html_parser::parse_html(new_text, HtmlParserOptions::default());
                 Some(new_parse.tree().syntax().clone())
             },
         )?;
